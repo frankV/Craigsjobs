@@ -142,7 +142,7 @@ def send_email(email_body = None):
 
     from_addr    = os.environ.get('FROM_ADDR') 
     to_addr_list = [os.environ.get('TO_ADDR')]
-    # cc_addr_list = ['cc@xx.com']
+    cc_addr_list = [os.environ.get('CC_ADDR')]
     subject      = 'Howdy'
     # message      = 'Howdy from a python function'
     message 	 = email_body 
@@ -152,7 +152,7 @@ def send_email(email_body = None):
 
     header  = 'From: %s\n' % from_addr
     header += 'To: %s\n' % ','.join(to_addr_list)
-    # header += 'Cc: %s\n' % ','.join(cc_addr_list)
+    header += 'Cc: %s\n' % ','.join(cc_addr_list)
     header += 'Subject: %s\n\n' % subject
     message = header + message
 
