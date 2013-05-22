@@ -30,7 +30,7 @@ if args.dump: dump = True           # dump; will override any existing
 else: dump = False                  # dictionaries and drop existing tables
 
 
-daysBack = 1    # number ofdays to search back
+daysBack = 7    # number ofdays to search back
 match_strings = ['dental', 'hygiene', 'hygienist', 'dentist']
 matchedJobs = {}
 newMatches = {}
@@ -133,18 +133,19 @@ def getPostInfo(pid = 0, postUrl = None):
 		postBlurbs = postTable.find('ul', attrs={'class' : 'blurbs'})
 
 		if pid not in matchedJobs:
-			matchedJobs[pid] = [postDate, postReplyEmail, postTitle, \
+			matchedJobs[pid] = [postUrl, postDate, postReplyEmail, postTitle, \
 								postBody, postBlurbs]
-			newMatches[pid] = [postDate, postReplyEmail, postTitle, \
+			newMatches[pid] = [postUrl, postDate, postReplyEmail, postTitle, \
 							   postBody, postBlurbs]
 
-def send_email():
+def send_email(email_body = None):
 
     from_addr    = os.environ.get('FROM_ADDR') 
     to_addr_list = [os.environ.get('TO_ADDR')]
     # cc_addr_list = ['cc@xx.com']
     subject      = 'Howdy'
-    message      = 'Howdy from a python function'
+    # message      = 'Howdy from a python function'
+    message 	 = email_body 
     login        = os.environ.get('EMAIL_LOGIN')
     password     = os.environ.get('EMAIL_PASSWD')
     smtpserver   = 'smtp.gmail.com:587'
@@ -186,7 +187,6 @@ if table.find('p', attrs={'class' : 'nextpage'}):
 
 while len(urls) > 0 and dateRange(pdate, daysBack):
 
-
 	rows = table.findAll('p', attrs={'class' : 'row'})
 
 	for row in rows:
@@ -220,7 +220,15 @@ while len(urls) > 0 and dateRange(pdate, daysBack):
 if len(newMatches) > 0:
 	numOfNewMatches = len(newMatches)
 
-send_email()
+	email_body = str(numOfNewMatches) + '\n'
+
+# [postUrl, postDate, postReplyEmail, postTitle, postBody, postBlurbs]
+	for key, value in newMatches.iteritems():
+		email_body += str(value[3])[52:-5].strip('\n')
+		email_body += '\n' + str(value[0])
+		email_body += '\n'
+
+	send_email(email_body)
 
 print 'storing pickle'
 pickleDump()
